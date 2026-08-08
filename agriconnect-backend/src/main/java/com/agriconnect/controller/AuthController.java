@@ -23,23 +23,35 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(
+            @Valid @RequestBody RegisterRequest request) {
+
+        System.out.println("REGISTER REQUEST = " + request);
+
         AuthResponse response = authService.register(request);
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
         AuthResponse response = authService.login(request);
+
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getProfile(Principal principal) {
+
         if (principal == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        UserProfileResponse response = authService.getProfile(principal.getName());
+
+        UserProfileResponse response =
+                authService.getProfile(principal.getName());
+
         return ResponseEntity.ok(response);
     }
 }
