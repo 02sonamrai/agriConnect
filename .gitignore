@@ -1,0 +1,5 @@
+﻿agriConnect/
+agriconnect-backend/.metadata/
+target/
+node_modules/
+.env
