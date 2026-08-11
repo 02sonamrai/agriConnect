@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { cropService } from '../services/api';
-import { Eye, Edit, Trash2, MapPin, Tag, ShieldAlert, Loader2, Plus, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
+import { Eye, Edit, Trash2, MapPin, Tag, ShieldAlert, Loader2, Plus, Sparkles, CheckCircle2, XCircle, Leaf } from 'lucide-react';
 
 const MyCrops = () => {
   const [crops, setCrops] = useState([]);
