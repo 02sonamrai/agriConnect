@@ -12,13 +12,16 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (isFarmer) {
+      const userRole = user?.role || '';
+      if (userRole === 'ROLE_FARMER' || userRole === 'FARMER') {
         navigate('/farmer/dashboard');
+      } else if (userRole === 'ROLE_BUYER' || userRole === 'BUYER') {
+        navigate('/marketplace');
       } else {
-        setError('Only registered Farmer accounts can access the dashboard.');
+        setError('Unknown user role.');
       }
     }
-  }, [isAuthenticated, isFarmer, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,8 +43,10 @@ const Login = () => {
       const userRole = data.role || '';
       if (userRole === 'ROLE_FARMER' || userRole === 'FARMER') {
         navigate('/farmer/dashboard');
+      } else if (userRole === 'ROLE_BUYER' || userRole === 'BUYER') {
+        navigate('/marketplace');
       } else {
-        setError('Access denied: User is not registered as a Farmer.');
+        setError('Access denied: Unknown user role.');
       }
     } catch (err) {
       console.error(err);

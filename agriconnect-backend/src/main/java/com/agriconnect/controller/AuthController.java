@@ -33,14 +33,16 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody LoginRequest request) {
+   @PostMapping("/login")
+public ResponseEntity<AuthResponse> login(
+        @RequestBody LoginRequest request) {
 
-        AuthResponse response = authService.login(request);
+    System.out.println("LOGIN REQUEST = " + request);
 
-        return ResponseEntity.ok(response);
-    }
+    AuthResponse response = authService.login(request);
+
+    return ResponseEntity.ok(response);
+}
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getProfile(Principal principal) {

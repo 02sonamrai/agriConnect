@@ -77,4 +77,16 @@ export const cropService = {
   }
 };
 
+// Marketplace Service Endpoints
+export const marketplaceService = {
+  getAvailableCrops: async () => {
+    const response = await api.get('/api/marketplace/crops');
+    return response.data;
+  },
+  getCropDetails: async (id) => {
+    const response = await api.get(`/api/marketplace/crops/${id}`);
+    return response.data;
+  }
+};
+
 export default api;

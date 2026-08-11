@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ShieldAlert, LogOut } from 'lucide-react';
 
-const ProtectedRoute = ({ children }) => {
-  const { user, loading, isAuthenticated, isFarmer, logout } = useContext(AuthContext);
+const ProtectedRoute = ({ children, allowedRoles = ['ROLE_FARMER'] }) => {
+  const { user, loading, isAuthenticated, logout } = useContext(AuthContext);
 
   if (loading) {
     return (
@@ -22,7 +22,14 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isFarmer) {
+  const userRole = user?.role || '';
+  const hasAccess = allowedRoles.some(role => {
+    const formattedRole = role.startsWith('ROLE_') ? role : `ROLE_${role}`;
+    const formattedUserRole = userRole.startsWith('ROLE_') ? userRole : `ROLE_${userRole}`;
+    return formattedRole === formattedUserRole;
+  });
+
+  if (!hasAccess) {
     return (
       <div className="min-h-screen bg-slate-950 flex justify-center items-center px-6 selection:bg-rose-500 selection:text-slate-900">
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
@@ -31,7 +38,7 @@ const ProtectedRoute = ({ children }) => {
           </div>
           <h2 className="text-2xl font-black text-white tracking-tight mb-2">Access Denied</h2>
           <p className="text-slate-400 text-sm leading-relaxed mb-6">
-            Only users registered with the <strong>FARMER</strong> role are authorized to access the Farmer marketplace dashboard. Your current role is <strong>{(user.role || '').replace('ROLE_', '')}</strong>.
+            You are not authorized to access this section. Your current role is <strong>{userRole.replace('ROLE_', '')}</strong>.
           </p>
           <div className="flex flex-col space-y-3">
             <button

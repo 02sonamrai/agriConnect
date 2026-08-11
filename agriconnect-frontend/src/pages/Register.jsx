@@ -18,8 +18,12 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated && isFarmer) {
-      navigate('/farmer/dashboard');
+    if (isAuthenticated) {
+      if (isFarmer) {
+        navigate('/farmer/dashboard');
+      } else {
+        navigate('/marketplace');
+      }
     }
   }, [isAuthenticated, isFarmer, navigate]);
 
@@ -46,8 +50,13 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      await register(formData);
-      navigate('/farmer/dashboard');
+      const data = await register(formData);
+      const userRole = data.role || '';
+      if (userRole === 'ROLE_BUYER' || userRole === 'BUYER') {
+        navigate('/marketplace');
+      } else {
+        navigate('/farmer/dashboard');
+      }
     } catch (err) {
       console.error(err);
       setError(
@@ -182,6 +191,22 @@ const Register = () => {
                   placeholder="••••••••"
                 />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="role" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                Register As
+              </label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500 text-slate-100 transition text-sm"
+              >
+                <option value="FARMER">Farmer (Sell crops)</option>
+                <option value="BUYER">Buyer (Purchase crops)</option>
+              </select>
             </div>
 
             <div className="pt-2">
