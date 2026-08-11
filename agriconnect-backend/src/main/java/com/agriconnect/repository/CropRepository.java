@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface CropRepository extends JpaRepository<Crop, Long> {
     List<Crop> findByFarmerId(Long farmerId);
     Optional<Crop> findByIdAndFarmerId(Long id, Long farmerId);
+    List<Crop> findByAvailableTrue();
+    Optional<Crop> findByIdAndAvailableTrue(Long id);
 }

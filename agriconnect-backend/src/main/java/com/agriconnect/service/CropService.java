@@ -10,4 +10,6 @@ public interface CropService {
     CropResponse getCropById(Long id, String farmerEmail);
     CropResponse updateCrop(Long id, CropRequest request, String farmerEmail);
     void deleteCrop(Long id, String farmerEmail);
+    List<CropResponse> getAvailableCrops();
+    CropResponse getAvailableCropById(Long id);
 }

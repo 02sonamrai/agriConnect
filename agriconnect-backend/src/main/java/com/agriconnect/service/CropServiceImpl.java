@@ -118,4 +118,19 @@ public class CropServiceImpl implements CropService {
 
         cropRepository.delete(crop);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CropResponse> getAvailableCrops() {
+        List<Crop> crops = cropRepository.findByAvailableTrue();
+        return crops.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CropResponse getAvailableCropById(Long id) {
+        Crop crop = cropRepository.findByIdAndAvailableTrue(id)
+                .orElseThrow(() -> new CustomException("Crop not found or unavailable", HttpStatus.NOT_FOUND));
+        return mapToResponse(crop);
+    }
 }
