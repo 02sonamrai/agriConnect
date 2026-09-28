@@ -31,12 +31,14 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register", "/api/auth/login", "/uploads/**").permitAll()
                 .requestMatchers("/api/farmer/**").hasAuthority("ROLE_FARMER")
+                .requestMatchers("/api/middleman/**").hasAnyAuthority("ROLE_MIDDLEMAN", "ROLE_ADMIN")
                 .requestMatchers("/api/marketplace/**").hasAnyAuthority("ROLE_BUYER", "ROLE_FARMER", "ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

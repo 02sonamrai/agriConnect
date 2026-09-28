@@ -4,13 +4,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RegisterRequest {
 
     @NotBlank(message = "Email is required")
@@ -35,6 +36,6 @@ public class RegisterRequest {
     private String phoneNumber;
 
     @NotBlank(message = "Role is required")
-    @Pattern(regexp = "^(FARMER|BUYER|ADMIN)$", message = "Role must be FARMER, BUYER, or ADMIN")
+    @Pattern(regexp = "^(FARMER|BUYER|ADMIN|MIDDLEMAN)$", message = "Role must be FARMER, BUYER, ADMIN, or MIDDLEMAN")
     private String role;
 }

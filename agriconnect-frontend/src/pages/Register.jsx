@@ -54,6 +54,8 @@ const Register = () => {
       const userRole = data.role || '';
       if (userRole === 'ROLE_BUYER' || userRole === 'BUYER') {
         navigate('/marketplace');
+      } else if (userRole === 'ROLE_MIDDLEMAN' || userRole === 'MIDDLEMAN') {
+        navigate('/middleman/dashboard');
       } else {
         navigate('/farmer/dashboard');
       }
@@ -206,6 +208,7 @@ const Register = () => {
               >
                 <option value="FARMER">Farmer (Sell crops)</option>
                 <option value="BUYER">Buyer (Purchase crops)</option>
+                <option value="MIDDLEMAN">Middleman (Field Coordinator)</option>
               </select>
             </div>
 

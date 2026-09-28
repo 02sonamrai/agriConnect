@@ -17,6 +17,8 @@ const Login = () => {
         navigate('/farmer/dashboard');
       } else if (userRole === 'ROLE_BUYER' || userRole === 'BUYER') {
         navigate('/marketplace');
+      } else if (userRole === 'ROLE_MIDDLEMAN' || userRole === 'MIDDLEMAN') {
+        navigate('/middleman/dashboard');
       } else {
         setError('Unknown user role.');
       }
@@ -45,6 +47,8 @@ const Login = () => {
         navigate('/farmer/dashboard');
       } else if (userRole === 'ROLE_BUYER' || userRole === 'BUYER') {
         navigate('/marketplace');
+      } else if (userRole === 'ROLE_MIDDLEMAN' || userRole === 'MIDDLEMAN') {
+        navigate('/middleman/dashboard');
       } else {
         setError('Access denied: Unknown user role.');
       }

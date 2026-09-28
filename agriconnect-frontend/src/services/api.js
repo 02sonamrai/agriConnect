@@ -89,4 +89,66 @@ export const marketplaceService = {
   }
 };
 
+// Middleman / Field Coordinator Service Endpoints
+export const middlemanService = {
+  createFarmer: async (farmerData) => {
+    const response = await api.post('/api/middleman/farmers', farmerData);
+    return response.data;
+  },
+  getCollectedFarmers: async () => {
+    const response = await api.get('/api/middleman/farmers');
+    return response.data;
+  },
+  getFarmerById: async (id) => {
+    const response = await api.get(`/api/middleman/farmers/${id}`);
+    return response.data;
+  },
+  updateFarmer: async (id, farmerData) => {
+    const response = await api.put(`/api/middleman/farmers/${id}`, farmerData);
+    return response.data;
+  },
+  deleteFarmer: async (id) => {
+    const response = await api.delete(`/api/middleman/farmers/${id}`);
+    return response.data;
+  },
+  getStats: async () => {
+    const response = await api.get('/api/middleman/farmers/stats');
+    return response.data;
+  },
+  searchFarmers: async (query = '') => {
+    const response = await api.get('/api/middleman/farmers/search', { params: { query } });
+    return response.data;
+  },
+  linkFarmer: async (collectedFarmerId, farmerUserId) => {
+    const response = await api.put(`/api/middleman/farmers/${collectedFarmerId}/link/${farmerUserId}`);
+    return response.data;
+  },
+  unlinkFarmer: async (collectedFarmerId) => {
+    const response = await api.put(`/api/middleman/farmers/${collectedFarmerId}/unlink`);
+    return response.data;
+  },
+  createCropForFarmer: async (collectedFarmerId, cropData) => {
+    const response = await api.post(`/api/middleman/farmers/${collectedFarmerId}/crops`, cropData);
+    return response.data;
+  },
+  getCropsForFarmer: async (collectedFarmerId) => {
+    const response = await api.get(`/api/middleman/farmers/${collectedFarmerId}/crops`);
+    return response.data;
+  },
+  updateCrop: async (cropId, cropData) => {
+    const response = await api.put(`/api/middleman/crops/${cropId}`, cropData);
+    return response.data;
+  },
+  deleteCrop: async (cropId) => {
+    const response = await api.delete(`/api/middleman/crops/${cropId}`);
+    return response.data;
+  },
+  uploadCropImage: async (formData) => {
+    const response = await api.post('/api/middleman/crops/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+};
+
 export default api;

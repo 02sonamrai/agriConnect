@@ -49,13 +49,17 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException("Phone number is already registered", HttpStatus.BAD_REQUEST);
         }
 
-        // Map short role name to standard database format (e.g. FARMER -> ROLE_FARMER)
-        // String dbRoleName = "ROLE_" + request.getRole().toUpperCase();
-        // Role role = roleRepository.findByName(dbRoleName)
-        //         .orElseThrow(() -> new CustomException("Role " + request.getRole() + " not found", HttpStatus.BAD_REQUEST));
+        String inputRole = request.getRole().toUpperCase();
+        String dbRoleName = inputRole.startsWith("ROLE_") ? inputRole : "ROLE_" + inputRole;
 
-        Role role = roleRepository.findByName(request.getRole().toUpperCase())
-        .orElseThrow(() -> new CustomException("Role " + request.getRole() + " not found", HttpStatus.BAD_REQUEST));
+        Role role = roleRepository.findByName(dbRoleName)
+                .or(() -> roleRepository.findByName(inputRole))
+                .orElseGet(() -> roleRepository.save(
+                        Role.builder()
+                                .name(dbRoleName)
+                                .description(inputRole + " Role")
+                                .build()
+                ));
 
         User user = User.builder()
                 .email(request.getEmail())
