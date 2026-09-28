@@ -3,3 +3,5 @@ agriconnect-backend/.metadata/
 target/
 node_modules/
 .env
+agriconnect-backend/uploads/
+agriconnect-frontend/vite.config.js.timestamp-*.mjs
