@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import FarmerLayout from './layouts/FarmerLayout';
 import BuyerLayout from './layouts/BuyerLayout';
+import MiddlemanLayout from './layouts/MiddlemanLayout';
 
 // Pages
 import Login from './pages/Login';
@@ -15,6 +16,12 @@ import EditCrop from './pages/EditCrop';
 import CropDetails from './pages/CropDetails';
 import Marketplace from './pages/Marketplace';
 import MarketplaceCropDetails from './pages/MarketplaceCropDetails';
+
+// Middleman / Field Coordinator Pages
+import MiddlemanDashboard from './pages/MiddlemanDashboard';
+import CollectedFarmers from './pages/CollectedFarmers';
+import AddFarmer from './pages/AddFarmer';
+import EditFarmer from './pages/EditFarmer';
 
 function App() {
   return (
@@ -29,7 +36,7 @@ function App() {
           <Route
             path="/farmer"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['ROLE_FARMER']}>
                 <FarmerLayout />
               </ProtectedRoute>
             }
@@ -53,6 +60,22 @@ function App() {
           >
             <Route index element={<Marketplace />} />
             <Route path="crops/:id" element={<MarketplaceCropDetails />} />
+          </Route>
+
+          {/* Protected Middleman / Field Coordinator Routes */}
+          <Route
+            path="/middleman"
+            element={
+              <ProtectedRoute allowedRoles={['ROLE_MIDDLEMAN', 'ROLE_ADMIN']}>
+                <MiddlemanLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<MiddlemanDashboard />} />
+            <Route path="farmers" element={<CollectedFarmers />} />
+            <Route path="farmers/add" element={<AddFarmer />} />
+            <Route path="farmers/edit/:id" element={<EditFarmer />} />
           </Route>
 
           {/* Root Redirect */}

@@ -173,8 +173,33 @@ CREATE TABLE notifications (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 15. Default Roles Setup
+-- 15. Collected Farmers Table (Field Coordinator collected data)
+CREATE TABLE collected_farmers (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    farmer_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(15) NOT NULL,
+    village VARCHAR(100) NOT NULL,
+    district VARCHAR(100),
+    state VARCHAR(100),
+    farming_type VARCHAR(50),
+    primary_crop VARCHAR(100) NOT NULL,
+    land_area DECIMAL(10,2),
+    land_area_unit VARCHAR(20),
+    approximate_production DECIMAL(10,2),
+    production_unit VARCHAR(20),
+    preferred_market VARCHAR(150),
+    notes TEXT,
+    collected_by BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (collected_by) REFERENCES users(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 16. Default Roles Setup
 INSERT INTO roles (id, name, description) VALUES
 (1, 'ROLE_ADMIN', 'Platform Administrator'),
 (2, 'ROLE_FARMER', 'Producer and Seller of Crops'),
-(3, 'ROLE_BUYER', 'Consumer or Wholesaler Purchasing Crops');
+(3, 'ROLE_BUYER', 'Consumer or Wholesaler Purchasing Crops'),
+(4, 'ROLE_MIDDLEMAN', 'Field Coordinator collecting real-world farmer data')
+ON DUPLICATE KEY UPDATE description=VALUES(description);
+
