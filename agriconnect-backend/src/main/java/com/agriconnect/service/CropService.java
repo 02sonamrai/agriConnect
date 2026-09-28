@@ -12,4 +12,9 @@ public interface CropService {
     void deleteCrop(Long id, String farmerEmail);
     List<CropResponse> getAvailableCrops();
     CropResponse getAvailableCropById(Long id);
+
+    CropResponse createCropForCollectedFarmer(Long collectedFarmerId, CropRequest request, String middlemanEmail, boolean isAdmin);
+    List<CropResponse> getCropsForCollectedFarmer(Long collectedFarmerId, String middlemanEmail, boolean isAdmin);
+    CropResponse updateCropForMiddleman(Long cropId, CropRequest request, String middlemanEmail, boolean isAdmin);
+    void deleteCropForMiddleman(Long cropId, String middlemanEmail, boolean isAdmin);
 }

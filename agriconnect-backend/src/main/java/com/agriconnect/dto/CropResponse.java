@@ -26,4 +26,6 @@ public class CropResponse {
     private LocalDateTime updatedAt;
     private Long farmerId;
     private String farmerName;
+    private Long collectedFarmerId;
+    private Boolean isCollectedFarmer;
 }

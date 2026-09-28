@@ -52,8 +52,12 @@ public class Crop {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "farmer_id", nullable = false)
+    @JoinColumn(name = "farmer_id", nullable = true)
     private User farmer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collected_farmer_id", nullable = true)
+    private CollectedFarmer collectedFarmer;
 
     @PrePersist
     protected void onCreate() {
