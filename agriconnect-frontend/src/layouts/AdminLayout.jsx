@@ -13,7 +13,7 @@ const AdminLayout = () => {
     { name: 'Overview', path: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Market Prices', path: '/admin/market-prices', icon: Scale },
   ];
-  const isActive = (path) => location.pathname === path;
+ const isActive = (path) => location.pathname === path;
 
   return <div className="min-h-screen bg-slate-950 font-sans text-slate-100">
     <header className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-6 py-4">
@@ -32,5 +32,6 @@ const AdminLayout = () => {
     <main className="mx-auto max-w-7xl p-6 md:p-10"><Outlet /></main>
   </div>;
 };
+
 
 export default AdminLayout;
