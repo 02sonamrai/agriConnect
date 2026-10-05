@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LayoutDashboard, Leaf, PlusCircle, LogOut, Menu, X, User } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
+import { LayoutDashboard, Leaf, PlusCircle, LogOut, Menu, X, User, Receipt, Scale } from 'lucide-react';
 
 const FarmerLayout = () => {
   const { user, logout } = useContext(AuthContext);
@@ -24,6 +25,16 @@ const FarmerLayout = () => {
       name: 'Add Crop',
       path: '/farmer/crops/add',
       icon: PlusCircle,
+    },
+    {
+      name: 'Orders Received',
+      path: '/farmer/orders',
+      icon: Receipt,
+    },
+    {
+      name: 'Market Prices',
+      path: '/farmer/market-prices',
+      icon: Scale,
     },
   ];
 
@@ -49,7 +60,7 @@ const FarmerLayout = () => {
         </div>
 
         {/* User Card */}
-        <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-4 mb-8 flex items-center space-x-3">
+        <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-4 mb-4 flex items-center space-x-3">
           <div className="bg-lime-500/10 p-2.5 rounded-xl border border-lime-500/20 text-lime-400">
             <User className="h-5 w-5" />
           </div>
@@ -57,6 +68,11 @@ const FarmerLayout = () => {
             <p className="font-bold text-sm text-white truncate">{user?.firstName} {user?.lastName}</p>
             <p className="text-xs text-slate-500 truncate">Farmer</p>
           </div>
+        </div>
+
+        {/* New-order and order-update alerts */}
+        <div className="mb-8">
+          <NotificationBell />
         </div>
 
         {/* Navigation Menu */}
@@ -68,10 +84,10 @@ const FarmerLayout = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition font-medium text-sm ${
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ease-in-out font-medium text-sm ${
                   active
-                    ? 'bg-lime-600 text-white shadow-lg shadow-lime-900/20'
-                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
+                    ? 'bg-lime-600 text-white shadow-lg shadow-lime-900/20 hover:shadow-lime-900/30'
+                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-white hover:scale-[1.01]'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -135,8 +151,8 @@ const FarmerLayout = () => {
                     key={item.name}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-4 rounded-xl transition font-semibold ${
-                      active ? 'bg-lime-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                    className={`flex items-center space-x-3 px-4 py-4 rounded-xl transition-all duration-200 ease-in-out font-semibold ${
+                      active ? 'bg-lime-600 text-white shadow-lg shadow-lime-900/20 hover:shadow-lime-900/30' : 'text-slate-400 hover:bg-slate-800 hover:text-white hover:scale-[1.01]'
                     }`}
                   >
                     <Icon className="h-6 w-6" />

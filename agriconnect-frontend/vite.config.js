@@ -11,6 +11,14 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
+      },
+      // Crop images are stored on disk by the backend and served from /uploads/**
+      // (see WebConfig). Without this the SPA fallback returns index.html for
+      // image requests, so uploaded crop images never render in dev.
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
       }
     }
   }

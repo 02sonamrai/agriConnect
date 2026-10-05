@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { marketplaceService } from '../services/api';
-import { Leaf, ArrowLeft, Calendar, MapPin, Tag, ShieldAlert, Loader2, DollarSign, Archive, CheckCircle, User } from 'lucide-react';
+import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
+import { marketplaceService, cartService, getErrorMessage } from '../services/api';
+import ContactFarmerModal from '../components/ContactFarmerModal';
+import {
+  Leaf, ArrowLeft, Calendar, MapPin, Tag, ShieldAlert, Loader2, DollarSign, Archive, CheckCircle, User,
+  ShoppingCart, Phone, Minus, Plus
+} from 'lucide-react';
 
 const MarketplaceCropDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart, refreshCart } = useOutletContext() || {};
+
   const [crop, setCrop] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Purchase / contact state
+  const [quantity, setQuantity] = useState(1);
+  const [actionError, setActionError] = useState('');
+  const [adding, setAdding] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
     const fetchCropDetails = async () => {
@@ -23,6 +36,34 @@ const MarketplaceCropDetails = () => {
     };
     fetchCropDetails();
   }, [id]);
+
+  const maxQuantity = crop ? Number(crop.quantity) : 1;
+
+  const adjustQuantity = (next) => {
+    const value = Math.floor(Number(next));
+    if (Number.isNaN(value)) return;
+    setQuantity(Math.min(Math.max(value, 1), Math.max(maxQuantity, 1)));
+  };
+
+  const handleAddToCart = async (thenCheckout) => {
+    setAdding(true);
+    setActionError('');
+    try {
+      if (addToCart) {
+        await addToCart(Number(id), quantity);
+      } else {
+        await cartService.addItem(Number(id), quantity);
+        await refreshCart?.();
+      }
+      if (thenCheckout) {
+        navigate('/marketplace/cart');
+      }
+    } catch (err) {
+      setActionError(getErrorMessage(err, `Could not add ${crop?.cropName || 'this crop'} to your cart.`));
+    } finally {
+      setAdding(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -169,17 +210,91 @@ const MarketplaceCropDetails = () => {
             </div>
 
             {/* Bottom Actions footer */}
-            <div className="flex space-x-3 border-t border-slate-800/80 pt-6 mt-8">
-              <button
-                className="flex-grow bg-lime-600 hover:bg-lime-500 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-lime-900/30"
-                onClick={() => alert("Contact and order features will be available in the next phase!")}
-              >
-                <span>Purchase Crop</span>
-              </button>
+            <div className="border-t border-slate-800/80 pt-6 mt-8 space-y-3">
+              {actionError && (
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2 flex items-start space-x-2">
+                  <ShieldAlert className="h-4 w-4 text-rose-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-rose-300">{actionError}</p>
+                </div>
+              )}
+
+              {/* Quantity stepper */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Quantity</span>
+                <div className="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-xl p-1">
+                  <button
+                    onClick={() => adjustQuantity(quantity - 1)}
+                    disabled={quantity <= 1 || adding}
+                    className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition disabled:opacity-30"
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    max={maxQuantity}
+                    value={quantity}
+                    onChange={(e) => adjustQuantity(e.target.value)}
+                    disabled={adding}
+                    className="w-16 bg-transparent text-center text-sm font-bold text-white focus:outline-none disabled:opacity-50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+                  <button
+                    onClick={() => adjustQuantity(quantity + 1)}
+                    disabled={quantity >= maxQuantity || adding}
+                    className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition disabled:opacity-30"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="text-xs text-slate-500 pr-2 pl-1">{crop.unit}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Estimated total</span>
+                <span className="text-xl font-black text-lime-400">
+                  ₹{(Number(crop.pricePerUnit) * quantity).toLocaleString('en-IN')}
+                </span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-2">
+                <button
+                  onClick={() => handleAddToCart(true)}
+                  disabled={adding}
+                  className="flex-grow bg-lime-600 hover:bg-lime-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-lime-900/30 disabled:shadow-none"
+                >
+                  {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+                  <span>{adding ? 'Adding...' : 'Purchase Crop'}</span>
+                </button>
+
+                <button
+                  onClick={() => handleAddToCart(false)}
+                  disabled={adding}
+                  className="flex-grow bg-slate-800 hover:bg-slate-700 disabled:bg-slate-800/50 disabled:text-slate-600 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center space-x-2 text-sm"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  <span>Add to Cart</span>
+                </button>
+
+                <button
+                  onClick={() => setContactOpen(true)}
+                  className="flex-grow bg-transparent hover:bg-slate-800/60 border border-slate-800 text-slate-200 font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center space-x-2 text-sm"
+                >
+                  <Phone className="h-4 w-4" />
+                  <span>Contact Farmer</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {contactOpen && (
+        <ContactFarmerModal
+          cropId={Number(id)}
+          cropName={crop.cropName}
+          onClose={() => setContactOpen(false)}
+        />
+      )}
     </div>
   );
 };

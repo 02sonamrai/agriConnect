@@ -33,6 +33,20 @@ public class User {
     @Column(name = "phone_number", unique = true, nullable = false, length = 15)
     private String phoneNumber;
 
+    // Delivery address. Optional so existing accounts and registrations stay valid; when
+    // present it is copied onto the Order as a snapshot at checkout.
+    @Column(name = "address_line", length = 200)
+    private String addressLine;
+
+    @Column(length = 60)
+    private String city;
+
+    @Column(length = 60)
+    private String state;
+
+    @Column(name = "pin_code", length = 10)
+    private String pincode;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

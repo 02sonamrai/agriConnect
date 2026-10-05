@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { marketplaceService } from '../services/api';
-import { Leaf, Search, Tag, MapPin, CheckCircle2, Eye, ShieldAlert, Loader2, Sparkles } from 'lucide-react';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import { marketplaceService, getErrorMessage } from '../services/api';
+import { Leaf, Search, Tag, MapPin, CheckCircle2, Eye, ShieldAlert, Loader2, Sparkles, ShoppingCart, Check } from 'lucide-react';
 
 const Marketplace = () => {
+  const navigate = useNavigate();
+  // Cart lives in BuyerLayout so the sidebar badge and this page never disagree.
+  const { addToCart, cart } = useOutletContext() || {};
+
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [addingId, setAddingId] = useState(null);
+  const [justAddedId, setJustAddedId] = useState(null);
   
   // Client-side filtering states
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +38,22 @@ const Marketplace = () => {
   // Extract unique categories for filter dropdown
   const categories = Array.from(new Set(crops.map((crop) => crop.category))).filter(Boolean);
 
+  const handleAddToCart = async (crop) => {
+    if (!addToCart) return;
+    setAddingId(crop.id);
+    setError('');
+    setNotice('');
+    try {
+      await addToCart(crop.id, 1);
+      setJustAddedId(crop.id);
+      setTimeout(() => setJustAddedId((current) => (current === crop.id ? null : current)), 1600);
+    } catch (err) {
+      setError(getErrorMessage(err, `Could not add ${crop.cropName} to your cart.`));
+    } finally {
+      setAddingId(null);
+    }
+  };
+
   // Filter logic
   const filteredCrops = crops.filter((crop) => {
     const matchesSearch = crop.cropName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -51,6 +74,15 @@ const Marketplace = () => {
         <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl flex items-start space-x-3 text-rose-400 text-sm animate-shake">
           <ShieldAlert className="h-5 w-5 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {notice && (
+        <div className="bg-lime-500/10 border border-lime-500/20 p-4 rounded-xl flex items-center justify-between gap-3 text-lime-400 text-sm">
+          <span>{notice}</span>
+          <button onClick={() => navigate('/marketplace/cart')} className="font-bold underline hover:text-lime-300 transition flex-shrink-0">
+            View cart
+          </button>
         </div>
       )}
 
@@ -186,8 +218,22 @@ const Marketplace = () => {
                   <span className="truncate">{crop.location}</span>
                 </div>
 
-                {/* Details Button */}
-                <div className="border-t border-slate-800/80 pt-4 mt-auto">
+                {/* Actions */}
+                <div className="border-t border-slate-800/80 pt-4 mt-auto space-y-2">
+                  <button
+                    onClick={() => handleAddToCart(crop)}
+                    disabled={addingId === crop.id}
+                    className="w-full flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-800/50 disabled:text-slate-600 text-white font-bold py-2.5 rounded-xl transition text-xs"
+                  >
+                    {addingId === crop.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : justAddedId === crop.id ? (
+                      <Check className="h-4 w-4 text-lime-400" />
+                    ) : (
+                      <ShoppingCart className="h-4 w-4" />
+                    )}
+                    <span>{justAddedId === crop.id ? 'Added to cart' : 'Add to Cart'}</span>
+                  </button>
                   <Link
                     to={`/marketplace/crops/${crop.id}`}
                     className="flex items-center justify-center space-x-2 bg-lime-600 hover:bg-lime-500 text-white font-bold py-2.5 rounded-xl transition text-xs shadow-lg shadow-lime-900/25 w-full"

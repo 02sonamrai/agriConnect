@@ -1,12 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Leaf, Mail, Lock, ShieldAlert, ArrowRight } from 'lucide-react';
+import AuthLayout from '../components/AuthLayout';
+import { Mail, Lock, ShieldAlert, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const Login = () => {
-  const { login, isAuthenticated, isFarmer, user } = useContext(AuthContext);
+  const { login, isAuthenticated, user } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -19,6 +21,8 @@ const Login = () => {
         navigate('/marketplace');
       } else if (userRole === 'ROLE_MIDDLEMAN' || userRole === 'MIDDLEMAN') {
         navigate('/middleman/dashboard');
+      } else if (userRole === 'ROLE_ADMIN' || userRole === 'ADMIN') {
+        navigate('/admin/dashboard');
       } else {
         setError('Unknown user role.');
       }
@@ -49,6 +53,8 @@ const Login = () => {
         navigate('/marketplace');
       } else if (userRole === 'ROLE_MIDDLEMAN' || userRole === 'MIDDLEMAN') {
         navigate('/middleman/dashboard');
+      } else if (userRole === 'ROLE_ADMIN' || userRole === 'ADMIN') {
+        navigate('/admin/dashboard');
       } else {
         setError('Access denied: Unknown user role.');
       }
@@ -63,92 +69,99 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-lime-500 selection:text-slate-900">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex bg-lime-500/10 p-3 rounded-2xl border border-lime-500/20 mb-4 text-lime-400">
-          <Leaf className="h-8 w-8 animate-pulse" />
-        </div>
-        <h2 className="text-3xl font-black tracking-tight text-white">Welcome Back</h2>
-        <p className="mt-2 text-sm text-slate-400">
-          Access your AgriConnect Farmer Dashboard
-        </p>
-      </div>
+    <AuthLayout
+      title="Welcome Back"
+      subtitle="Sign in to reach your AgriConnect dashboard"
+    >
+      <form className="stagger space-y-5" onSubmit={handleSubmit} noValidate>
+        {error && (
+          <div className="auth-error animate-scale-in" role="alert">
+            <ShieldAlert className="mt-0.5 h-5 w-5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-slate-900 border border-slate-800 py-8 px-6 shadow-2xl rounded-3xl sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl flex items-start space-x-3 text-rose-400 text-sm">
-                <ShieldAlert className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500 text-slate-100 placeholder-slate-600 transition text-sm"
-                  placeholder="name@example.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500 text-slate-100 placeholder-slate-600 transition text-sm"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full flex justify-center items-center space-x-2 py-3.5 px-4 bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl transition shadow-lg shadow-lime-900/30 disabled:opacity-50 disabled:cursor-not-allowed group text-sm"
-              >
-                <span>{isSubmitting ? 'Authenticating...' : 'Sign In'}</span>
-                {!isSubmitting && <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition" />}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-8 border-t border-slate-800/80 pt-6 text-center text-sm text-slate-400">
-            <span>Don't have a farmer account? </span>
-            <Link to="/register" className="font-semibold text-lime-400 hover:text-lime-300 hover:underline">
-              Register here
-            </Link>
+        <div>
+          <label htmlFor="email" className="auth-label">
+            Email Address
+          </label>
+          <div className="relative">
+            <Mail className="auth-icon h-5 w-5 peer-focus-icon peer" aria-hidden="true" />
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="auth-input peer pl-10 pr-4"
+              placeholder="name@example.com"
+            />
           </div>
         </div>
+
+        <div>
+          <label htmlFor="password" className="auth-label">
+            Password
+          </label>
+          <div className="relative">
+            <Lock className="auth-icon h-5 w-5 peer-focus-icon peer" aria-hidden="true" />
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="auth-input peer pl-10 pr-11"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 transition-all duration-200
+                hover:text-lime-600 focus:outline-none hover:scale-110 active:scale-95
+                dark:hover:text-lime-400"
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" aria-hidden="true" />
+              ) : (
+                <Eye className="h-5 w-5" aria-hidden="true" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div className="pt-1">
+          <button type="submit" disabled={isSubmitting} className="auth-button group">
+            {isSubmitting ? (
+              <>
+                <span className="auth-button-spinner" aria-hidden="true" />
+                <span>Authenticating...</span>
+              </>
+            ) : (
+              <>
+                <span>Sign In</span>
+                <ArrowRight
+                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+
+      <div className="mt-8 border-t border-slate-200/80 pt-6 text-center text-sm text-slate-500 dark:border-slate-700/70 dark:text-slate-400">
+        <span>New to AgriConnect? </span>
+        <Link to="/register" className="auth-link">
+          Create an account
+        </Link>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

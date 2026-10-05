@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LayoutDashboard, UserPlus, Users, LogOut, Menu, X, User, ShieldCheck } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
+import { LayoutDashboard, UserPlus, Users, LogOut, Menu, X, User, ShieldCheck, Receipt } from 'lucide-react';
 
 const MiddlemanLayout = () => {
   const { user, logout } = useContext(AuthContext);
@@ -25,6 +26,11 @@ const MiddlemanLayout = () => {
       path: '/middleman/farmers',
       icon: Users,
     },
+    {
+      name: 'Assisted Orders',
+      path: '/middleman/orders',
+      icon: Receipt,
+    },
   ];
 
   const handleLogout = () => {
@@ -40,11 +46,11 @@ const MiddlemanLayout = () => {
       <aside className="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 p-6 flex-shrink-0">
         {/* Brand */}
         <div className="flex items-center space-x-3 mb-8">
-          <div className="bg-emerald-500/10 p-2 rounded-xl border border-emerald-500/20 text-emerald-400">
+          <div className="bg-lime-500/10 p-2 rounded-xl border border-lime-500/20 text-lime-400 group-hover:bg-lime-500/15 transition-colors duration-300">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
-            <span className="font-extrabold text-xl bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+            <span className="font-extrabold text-xl bg-gradient-to-r from-lime-400 to-emerald-400 bg-clip-text text-transparent">
               AgriConnect
             </span>
             <span className="block text-[10px] uppercase tracking-widest text-slate-500 font-bold">
@@ -54,14 +60,19 @@ const MiddlemanLayout = () => {
         </div>
 
         {/* User Profile Card */}
-        <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 mb-8 flex items-center space-x-3">
-          <div className="bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20 text-emerald-400 shrink-0">
+        <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 mb-4 flex items-center space-x-3 group hover:border-lime-500/40 transition-all duration-300 ease-out hover:shadow-lg hover:shadow-lime-900/10 hover:scale-[1.01]">
+          <div className="bg-lime-500/10 p-2.5 rounded-xl border border-lime-500/20 text-lime-400 shrink-0 group-hover:bg-lime-500/15 transition-colors duration-300">
             <User className="h-5 w-5" />
           </div>
           <div className="truncate">
             <p className="font-bold text-sm text-white truncate">{user?.firstName} {user?.lastName}</p>
-            <p className="text-xs text-emerald-400/90 font-medium truncate">Field Coordinator</p>
+            <p className="text-xs text-lime-400/90 font-medium truncate">Field Coordinator</p>
           </div>
+        </div>
+
+        {/* New-order and order-update alerts for the coordinator's collected farmers */}
+        <div className="mb-8">
+          <NotificationBell />
         </div>
 
         {/* Navigation Menu */}
@@ -73,10 +84,10 @@ const MiddlemanLayout = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition font-medium text-sm ${
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ease-out font-medium text-sm transform ${
                   active
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+                    ? 'bg-lime-600 text-white shadow-lg shadow-lime-900/20 hover:shadow-lime-900/30'
+                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-white hover:scale-[1.02] hover:translate-x-0.5'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -141,8 +152,8 @@ const MiddlemanLayout = () => {
                     key={item.name}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-4 rounded-xl transition font-semibold ${
-                      active ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                    className={`flex items-center space-x-3 px-4 py-4 rounded-xl transition-all duration-300 ease-out font-semibold transform ${
+                      active ? 'bg-lime-600 text-white shadow-lg shadow-lime-900/20 hover:shadow-lime-900/30' : 'text-slate-400 hover:bg-slate-800 hover:text-white hover:scale-[1.02] hover:translate-x-0.5'
                     }`}
                   >
                     <Icon className="h-6 w-6" />

@@ -3,8 +3,148 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-slate-50 text-slate-900;
-    font-family: 'Inter', sans-serif;
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
+
+  body {
+    @apply font-sans antialiased transition-colors duration-500;
+    @apply bg-slate-50 text-slate-900;
+  }
+
+  .dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+
+  /* Consistent focus affordance for anything keyboard-navigable. */
+  :focus-visible {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---- Auth shell ---------------------------------------------------- */
+
+  .auth-canvas {
+    @apply relative min-h-screen overflow-hidden transition-colors duration-500;
+    @apply bg-slate-100 text-slate-900;
+  }
+
+  .dark .auth-canvas {
+    @apply bg-slate-950 text-slate-100;
+  }
+
+  /* Faint grid overlay that reads as texture without competing with the form. */
+  .auth-grid {
+    @apply pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-[0.15];
+    background-image:
+      linear-gradient(to right, rgb(100 116 139 / 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(100 116 139 / 0.18) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+  }
+
+  .auth-orb {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  .auth-card {
+    @apply relative rounded-3xl border p-6 backdrop-blur-xl sm:p-10;
+    @apply border-white/70 bg-white/80 shadow-[0_24px_70px_-24px_rgba(15,23,42,0.35)];
+    @apply dark:border-slate-700/70 dark:bg-slate-900/70 dark:shadow-[0_24px_70px_-20px_rgba(0,0,0,0.75)];
+  }
+
+  /* ---- Form controls ------------------------------------------------- */
+
+  .auth-label {
+    @apply mb-2 block text-xs font-semibold uppercase tracking-wider transition-colors duration-300;
+    @apply text-slate-500 dark:text-slate-400;
+  }
+
+  .auth-input {
+    @apply block w-full rounded-xl py-2.5 text-sm transition-all duration-300;
+    @apply border border-slate-200 bg-white/70 text-slate-900 placeholder-slate-400;
+    @apply hover:border-slate-300 hover:bg-white hover:shadow-sm;
+    @apply focus:border-lime-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-lime-500/15;
+    @apply dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder-slate-600;
+    @apply dark:hover:border-slate-600 dark:hover:bg-slate-950/90;
+    @apply dark:focus:border-lime-500 dark:focus:bg-slate-950 dark:focus:ring-lime-500/20;
+  }
+
+  .auth-icon {
+    @apply pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3;
+    @apply text-slate-400 transition-colors duration-300;
+  }
+
+  .peer-focus-icon {
+    @apply peer-focus:text-lime-600 dark:peer-focus:text-lime-400;
+  }
+
+  /* ---- Buttons ------------------------------------------------------- */
+
+  /* `group` is applied in markup, not here: Tailwind cannot @apply it. */
+  .auth-button {
+    @apply relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-3 text-sm font-bold text-white;
+    @apply bg-gradient-to-r from-lime-700 via-lime-600 to-emerald-600;
+    @apply shadow-lg shadow-lime-900/20;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:-translate-y-0.5 hover:shadow-xl hover:shadow-lime-900/35 hover:brightness-110;
+    @apply active:translate-y-0 active:scale-[0.99];
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-lime-500/40;
+    @apply disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg;
+  }
+
+  /* Sweeping gloss that crosses the button on hover. */
+  .auth-button::after {
+    content: '';
+    @apply pointer-events-none absolute inset-y-0 -left-full w-1/2;
+    @apply bg-gradient-to-r from-transparent via-white/30 to-transparent;
+    transition: left 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .auth-button:hover:not(:disabled)::after {
+    @apply left-full;
+  }
+
+  .auth-button-spinner {
+    @apply h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white;
+  }
+
+  .auth-error {
+    @apply flex items-start gap-3 rounded-xl border p-4 text-sm;
+    @apply border-rose-200 bg-rose-50/80 text-rose-700;
+    @apply dark:border-rose-500/25 dark:bg-rose-500/10 dark:text-rose-300;
+  }
+
+  .auth-link {
+    @apply font-semibold text-lime-700 underline-offset-4 transition-colors duration-200;
+    @apply hover:text-lime-600 hover:underline dark:text-lime-400 dark:hover:text-lime-300;
+  }
+
+  /* Staggers children so sections cascade in on mount. */
+  .stagger > * {
+    animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.12s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.19s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.26s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.33s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.40s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.47s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.54s; }
 }

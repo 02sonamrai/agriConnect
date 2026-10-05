@@ -1,7 +1,47 @@
-﻿agriConnect/
+﻿agriConnect/  # legacy demo folder, not the current source
+# Prevent the old demo name from unintentionally ignoring the active project directories
+!agriconnect-backend/
+!agriconnect-frontend/
 agriconnect-backend/.metadata/
 target/
 node_modules/
 .env
+agriconnect-backend/application-local.properties
 agriconnect-backend/uploads/
 agriconnect-frontend/vite.config.js.timestamp-*.mjs
+
+# Buyer cart / orders / contact feature. Same allowlist pattern as above: the broad
+# com/agriconnect/** rule hides new sources unless each one is re-included.
+!agriconnect-backend/src/main/java/com/agriconnect/entity/
+!agriconnect-backend/src/main/java/com/agriconnect/entity/CartItem.java
+!agriconnect-backend/src/main/java/com/agriconnect/entity/Order.java
+!agriconnect-backend/src/main/java/com/agriconnect/entity/OrderItem.java
+!agriconnect-backend/src/main/java/com/agriconnect/config/SecurityConfig.java
+!agriconnect-backend/src/main/java/com/agriconnect/controller/CartController.java
+!agriconnect-backend/src/main/java/com/agriconnect/controller/OrderController.java
+!agriconnect-backend/src/main/java/com/agriconnect/controller/ContactController.java
+!agriconnect-backend/src/main/java/com/agriconnect/repository/
+!agriconnect-backend/src/main/java/com/agriconnect/repository/CartItemRepository.java
+!agriconnect-backend/src/main/java/com/agriconnect/repository/OrderRepository.java
+!agriconnect-backend/src/main/java/com/agriconnect/repository/OrderItemRepository.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/AddToCartRequest.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/UpdateCartItemRequest.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/CartItemResponse.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/CartResponse.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/PlaceOrderRequest.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/OrderItemResponse.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/OrderResponse.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/ReceivedOrderResponse.java
+!agriconnect-backend/src/main/java/com/agriconnect/dto/FarmerContactResponse.java
+!agriconnect-backend/src/main/java/com/agriconnect/service/CartService.java
+!agriconnect-backend/src/main/java/com/agriconnect/service/CartServiceImpl.java
+!agriconnect-backend/src/main/java/com/agriconnect/service/OrderService.java
+!agriconnect-backend/src/main/java/com/agriconnect/service/OrderServiceImpl.java
+!agriconnect-backend/src/main/java/com/agriconnect/service/ContactService.java
+!agriconnect-backend/src/main/java/com/agriconnect/service/ContactServiceImpl.java
+!agriconnect-backend/src/test/java/com/agriconnect/controller/CartControllerSecurityTest.java
+!agriconnect-backend/src/test/java/com/agriconnect/controller/OrderControllerSecurityTest.java
+!agriconnect-backend/src/test/java/com/agriconnect/controller/ContactControllerSecurityTest.java
+!agriconnect-backend/src/test/java/com/agriconnect/service/CartServiceImplTest.java
+!agriconnect-backend/src/test/java/com/agriconnect/service/OrderServiceImplTest.java
+!agriconnect-backend/src/test/java/com/agriconnect/service/ContactServiceImplTest.java

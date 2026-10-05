@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
+    @ToString.Exclude
     private String token;
     private String tokenType;
     private String email;

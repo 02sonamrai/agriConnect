@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { middlemanService } from '../services/api';
+import { middlemanService, reviewService, getErrorMessage } from '../services/api';
+import SellerReviews from '../components/SellerReviews';
 import { Edit3, ArrowLeft, ShieldAlert, CheckCircle2, Loader2, Save } from 'lucide-react';
 
 const EditFarmer = () => {
@@ -27,6 +28,27 @@ const EditFarmer = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [scorecard, setScorecard] = useState(null);
+  const [scorecardLoading, setScorecardLoading] = useState(true);
+  const [scorecardError, setScorecardError] = useState('');
+
+  // Reviews for this collected farmer. Scoped to one collected farmer server-side, so a
+  // coordinator can only ever load their own. A failure here must not block editing.
+  const loadScorecard = useCallback(async () => {
+    setScorecardLoading(true);
+    setScorecardError('');
+    try {
+      setScorecard(await reviewService.getCollectedFarmerScorecard(id));
+    } catch (err) {
+      setScorecardError(getErrorMessage(err, 'Could not load reviews for this farmer.'));
+    } finally {
+      setScorecardLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    loadScorecard();
+  }, [loadScorecard]);
 
   useEffect(() => {
     const fetchFarmer = async () => {
@@ -414,6 +436,15 @@ const EditFarmer = () => {
           </div>
         </form>
       </div>
+
+      {/* What buyers have said about this collected farmer. Kept outside the form so editing
+          details never disturbs it, and loaded independently of the save. */}
+      <SellerReviews
+        summary={scorecard}
+        loading={scorecardLoading}
+        error={scorecardError}
+        emptyHint={`No reviews yet for ${formData.farmerName || 'this farmer'}. Buyers can rate them once an order is delivered.`}
+      />
     </div>
   );
 };

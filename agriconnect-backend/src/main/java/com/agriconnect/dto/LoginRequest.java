@@ -17,5 +17,6 @@ public class LoginRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
+    @ToString.Exclude
     private String password;
 }
